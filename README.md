@@ -1,7 +1,5 @@
 # Data Center Network as Code
 
-[![CI](https://github.com/Dbarrios080791/DC_Automation/actions/workflows/ci.yml/badge.svg)](https://github.com/Dbarrios080791/DC_Automation/actions/workflows/ci.yml)
-
 A home-lab Data Center built to **design, automate and operate a Cisco VXLAN EVPN fabric and Cisco ACI as code**,
 following Cisco's [Network as Code](https://netascode.cisco.com) (NaC) framework.
 
@@ -60,7 +58,7 @@ APP VLAN 20 → L2VNI 10020.
 │   ├── onbox/             # runs inside NX-OS (python3 + cli API, EEM-schedulable)
 │   └── offbox/            # NX-API tooling reading the NaC source of truth
 ├── tests/                 # offline tests (rules, inventory consistency)
-└── docs/                  # setup, CML sizing, addressing plan, workflow, roadmap (Spanish)
+└── docs/                  # NaC workflow and roadmap (Spanish)
 ```
 
 ## Quick start
