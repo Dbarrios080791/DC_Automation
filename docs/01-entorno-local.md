@@ -1,9 +1,9 @@
-# 01 · Entorno de trabajo en el MacBook M4 Pro
+# 01 · Nodo de control (macOS / Linux)
 
-El Mac es el **nodo de control**: aquí se escribe el código, se valida y se ejecuta
-Terraform/Ansible. Los switches corren en CML (PC de escritorio).
+El **nodo de control** es el equipo donde se escribe el código, se valida y se ejecuta
+Terraform/Ansible. Los switches corren en un servidor CML aparte.
 
-## 1. Herramientas base (Homebrew)
+## 1. Herramientas base (ejemplo con Homebrew en macOS)
 ```bash
 brew install git make python@3.12 tfenv
 brew install --cask visual-studio-code
@@ -33,8 +33,8 @@ make test              # tests offline
 make nxos-validate     # valida el modelo NaC sin tocar la red
 ```
 
-## 5. Conectividad Mac → CML
-El Mac debe alcanzar la red de gestión de los labs (`192.168.100.0/24`, ver
+## 5. Conectividad nodo de control → CML
+El nodo de control debe alcanzar la red de gestión de los labs (`192.168.100.0/24`, ver
 [03-direccionamiento.md](03-direccionamiento.md)):
 ```bash
 ping 192.168.100.11    # spine1, con el fabric NaC encendido

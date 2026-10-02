@@ -1,6 +1,6 @@
-# 02 · CML en el PC de escritorio
+# 02 · Servidor CML
 
-## Capacidad (Ryzen 7 · 8 núcleos / 16 hilos · 104 GB RAM para CML · licencia 20 nodos)
+## Capacidad de referencia (host x86 · 8 núcleos / 16 hilos · ~100 GB RAM para CML · licencia 20 nodos)
 
 | Recurso | N9Kv (9300v) | Alpine host |
 |---|---|---|
@@ -27,7 +27,7 @@ Si tu CML tiene otra imagen por defecto, cámbiala en la definición del nodo o 
 
 ## Red de gestión
 Todas las topologías conectan `mgmt0` a un `unmanaged_switch` y este a un
-`external_connector` en modo **bridge0** (la LAN del PC de escritorio).
+`external_connector` en modo **bridge0** (la LAN del host CML).
 
 - Si tu LAN **no** es `192.168.100.0/24`, tienes dos opciones:
   1. **Recomendada:** en CML (Cockpit → Networking) crea un bridge dedicado para labs

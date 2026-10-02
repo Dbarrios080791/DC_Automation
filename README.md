@@ -22,12 +22,12 @@ following Cisco's [Network as Code](https://netascode.cisco.com) (NaC) framework
 
 ```mermaid
 flowchart LR
-  subgraph Mac["MacBook (control node)"]
+  subgraph Ctl["Control node"]
     Y[nac/*/data<br/>YAML intent] --> V[nac-validate<br/>schema + rules]
     V --> T[terraform plan/apply<br/>nac-nxos · nac-aci]
     T --> A[ansible verify]
   end
-  subgraph CML["CML desktop host"]
+  subgraph CML["CML host"]
     S1[spine1] --- L1[leaf1] & L2[leaf2] & L3[leaf3]
     S2[spine2] --- L1 & L2 & L3
     L1 --- H1[host1]
