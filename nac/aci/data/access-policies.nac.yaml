@@ -1,0 +1,17 @@
+---
+# Access policies mínimas para que los EPG puedan asociarse a un dominio físico.
+apic:
+  access_policies:
+    vlan_pools:
+      - name: POOL-LAB
+        allocation: static
+        ranges:
+          - from: 100
+            to: 199
+    physical_domains:
+      - name: PHY-LAB
+        vlan_pool: POOL-LAB
+    aaeps:
+      - name: AAEP-LAB
+        physical_domains:
+          - PHY-LAB

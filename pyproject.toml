@@ -1,0 +1,16 @@
+[project]
+name = "dc-network-as-code"
+version = "0.1.0"
+description = "Data Center Network as Code lab: NX-OS VXLAN EVPN + ACI with Terraform, Ansible and Python"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+extend-exclude = ["python/onbox"]  # se ejecuta en el intérprete del switch
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

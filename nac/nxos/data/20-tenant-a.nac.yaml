@@ -1,0 +1,77 @@
+---
+# =============================================================================
+# SERVICIO: Tenant A  (un tenant = un device_group -> se apilan sin tocar el resto)
+#   VRF TENANT-A  L3VNI 50001 (VLAN 3001)
+#   WEB  VLAN 10 -> L2VNI 10010  172.16.10.0/24
+#   APP  VLAN 20 -> L2VNI 10020  172.16.20.0/24
+# Para agregar un tenant nuevo: copia este archivo, cambia IDs y la lista devices.
+# =============================================================================
+nxos:
+  device_groups:
+    - name: tenant-a
+      devices: [leaf1, leaf2, leaf3]
+      configuration:
+        vrfs:
+          - name: TENANT-A
+            description: Tenant A - produccion
+            vni: 50001
+            route_distinguisher: auto
+            address_families:
+              - address_family: ipv4-unicast
+                route_target_both_auto: true
+                route_target_both_auto_evpn: true
+        vlan:
+          vlans:
+            - id: 10
+              name: TENANT-A-WEB
+              vn_segment: 10010
+            - id: 20
+              name: TENANT-A-APP
+              vn_segment: 10020
+            - id: 3001
+              name: TENANT-A-L3VNI
+              vn_segment: 50001
+        interfaces:
+          vlans:
+            - id: 10
+              description: TENANT-A WEB anycast GW
+              vrf: TENANT-A
+              fabric_forwarding_mode: anycast-gw
+              ip:
+                address: 172.16.10.1/24
+            - id: 20
+              description: TENANT-A APP anycast GW
+              vrf: TENANT-A
+              fabric_forwarding_mode: anycast-gw
+              ip:
+                address: 172.16.20.1/24
+            - id: 3001
+              description: TENANT-A L3VNI
+              vrf: TENANT-A
+              ip:
+                forward: true
+          nve:
+            vnis:
+              - vni: 10010
+                ingress_replication_protocol: bgp
+                suppress_arp: true
+              - vni: 10020
+                ingress_replication_protocol: bgp
+                suppress_arp: true
+              - vni: 50001
+                associate_vrf: true
+        evpn:
+          vnis:
+            - vni: 10010
+              rd: auto
+              route_target_both_auto: true
+            - vni: 10020
+              rd: auto
+              route_target_both_auto: true
+        routing:
+          bgp:
+            vrfs:
+              - vrf: TENANT-A
+                address_families:
+                  - address_family: ipv4-unicast
+                    advertise_l2vpn_evpn: true

@@ -1,0 +1,22 @@
+extends: default
+
+ignore: |
+  .venv/
+  ansible/collections/
+  .terraform/
+
+rules:
+  indentation:
+    spaces: 2
+    indent-sequences: consistent  # los YAML exportados por CML no indentan listas
+  line-length:
+    max: 140
+  truthy:
+    allowed-values: ["true", "false", "yes", "no"]
+    check-keys: false
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: disable
+  document-start: disable
+  octal-values:
+    forbid-implicit-octal: true

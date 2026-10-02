@@ -1,0 +1,5 @@
+# Estado esperado (lo usa playbooks/verify-fabric.yml)
+expected:
+  ospf_full: 3        # un vecino por leaf
+  bgp_evpn_up: 3      # cada leaf es cliente RR
+  nve_peers: 0        # los spines no son VTEP

@@ -1,0 +1,40 @@
+# --- Secretos (NUNCA al repo) ---
+.env
+*.vault
+vault-pass*
+*.pem
+*.key
+
+# --- Python ---
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfstate.d/
+terraform.tfstate.d/
+crash.log
+*.tfplan
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.tfstate.lock.info
+model.yaml
+merged.yaml
+
+# --- Ansible ---
+ansible/collections/
+ansible/backups/
+*.retry
+
+# --- Sistema / editores ---
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

@@ -1,0 +1,14 @@
+---
+# Respaldo de running-config de todo el fabric NaC en ansible/backups/ (ignorado por git).
+#   make backup
+- name: Respaldar configuraciones
+  hosts: nac_fabric
+  gather_facts: false
+
+  tasks:
+    - name: Guardar running-config
+      cisco.nxos.nxos_config:
+        backup: true
+        backup_options:
+          dir_path: "{{ playbook_dir }}/../backups"
+          filename: "{{ inventory_hostname }}.cfg"

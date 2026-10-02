@@ -1,0 +1,34 @@
+---
+# Verificación post-cambio del fabric VXLAN EVPN.
+# Terraform declara la intención; este playbook comprueba que la red la cumple.
+#   make verify
+- name: Verificar underlay y overlay del fabric NaC
+  hosts: nac_fabric
+  gather_facts: false
+
+  tasks:
+    - name: Recoger estado de OSPF, BGP EVPN y NVE
+      cisco.nxos.nxos_command:
+        commands:
+          - show ip ospf neighbors
+          - show bgp l2vpn evpn summary
+          - show nve peers
+      register: state
+
+    - name: Calcular contadores
+      ansible.builtin.set_fact:
+        ospf_full: "{{ state.stdout[0] | regex_findall('\\bFULL/') | length }}"
+        # Una sesión establecida muestra un número de prefijos (no Idle/Active) en la última columna
+        bgp_evpn_up: "{{ state.stdout[1] | regex_findall('(?m)^\\d+\\.\\d+\\.\\d+\\.\\d+\\s+4\\s+.*\\s\\d+\\s*$') | length }}"
+        nve_peers: "{{ state.stdout[2] | regex_findall('(?m)^nve1\\s+\\S+\\s+Up\\b') | length }}"
+
+    - name: Validar contra el estado esperado del grupo
+      ansible.builtin.assert:
+        that:
+          - ospf_full | int == expected.ospf_full
+          - bgp_evpn_up | int == expected.bgp_evpn_up
+          - nve_peers | int == expected.nve_peers
+        success_msg: "OK  ospf={{ ospf_full }} bgp-evpn={{ bgp_evpn_up }} nve={{ nve_peers }}"
+        fail_msg: >-
+          Esperado ospf={{ expected.ospf_full }} bgp-evpn={{ expected.bgp_evpn_up }} nve={{ expected.nve_peers }}
+          | Real ospf={{ ospf_full }} bgp-evpn={{ bgp_evpn_up }} nve={{ nve_peers }}

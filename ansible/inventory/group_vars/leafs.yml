@@ -1,0 +1,4 @@
+expected:
+  ospf_full: 2        # spine1 + spine2
+  bgp_evpn_up: 2      # sesiones iBGP hacia los RR
+  nve_peers: 2        # los otros dos VTEP

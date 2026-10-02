@@ -1,0 +1,56 @@
+---
+# =============================================================================
+# Tenant LAB-DC: aplicación de 2 capas (WEB -> APP) con contrato HTTP/HTTPS.
+# Equivalente conceptual al TENANT-A del fabric NX-OS (nac/nxos/data).
+# =============================================================================
+apic:
+  tenants:
+    - name: LAB-DC
+      description: Tenant de practica gestionado con NaC
+      vrfs:
+        - name: VRF-PROD
+      bridge_domains:
+        - name: BD-WEB
+          vrf: VRF-PROD
+          subnets:
+            - ip: 172.16.10.1/24
+              public: true
+        - name: BD-APP
+          vrf: VRF-PROD
+          subnets:
+            - ip: 172.16.20.1/24
+      filters:
+        - name: FLT-WEB
+          entries:
+            - name: HTTP
+              ethertype: ip
+              protocol: tcp
+              destination_from_port: 80
+            - name: HTTPS
+              ethertype: ip
+              protocol: tcp
+              destination_from_port: 443
+      contracts:
+        - name: CON-WEB-TO-APP
+          scope: context
+          subjects:
+            - name: SUBJ-WEB
+              filters:
+                - filter: FLT-WEB
+      application_profiles:
+        - name: AP-ECOMMERCE
+          endpoint_groups:
+            - name: EPG-WEB
+              bridge_domain: BD-WEB
+              physical_domains:
+                - PHY-LAB
+              contracts:
+                consumers:
+                  - CON-WEB-TO-APP
+            - name: EPG-APP
+              bridge_domain: BD-APP
+              physical_domains:
+                - PHY-LAB
+              contracts:
+                providers:
+                  - CON-WEB-TO-APP

@@ -1,0 +1,54 @@
+---
+# =============================================================================
+# GRUPO: spines
+# Underlay OSPF + BGP route-reflectors para l2vpn evpn.
+# Los valores ${...} son variables definidas en cada dispositivo.
+# =============================================================================
+nxos:
+  device_groups:
+    - name: spines
+      configuration:
+        feature:
+          evpn: true  # "nv overlay evpn" - requerido para reflejar rutas EVPN
+        interfaces:
+          loopbacks:
+            - id: 0
+              description: Router-ID / BGP EVPN peering
+              ip:
+                address: "${loopback0}/32"
+              ospf:
+                process: UNDERLAY
+                area: 0.0.0.0
+        routing:
+          ospf_processes:
+            - name: UNDERLAY
+              router_id: "${loopback0}"
+          bgp:
+            asn: 65001
+            router_id: "${loopback0}"
+            log_neighbor_changes: true
+            address_families:
+              - address_family: l2vpn-evpn
+            neighbors:
+              - ip: 10.0.0.11
+                description: leaf1
+                remote_as: 65001
+                update_source_interface_type: loopback
+                update_source_interface_id: 0
+                address_families: &rr_client_evpn
+                  - address_family: l2vpn-evpn
+                    send_community_standard: true
+                    send_community_extended: true
+                    route_reflector_client: true
+              - ip: 10.0.0.12
+                description: leaf2
+                remote_as: 65001
+                update_source_interface_type: loopback
+                update_source_interface_id: 0
+                address_families: *rr_client_evpn
+              - ip: 10.0.0.13
+                description: leaf3
+                remote_as: 65001
+                update_source_interface_type: loopback
+                update_source_interface_id: 0
+                address_families: *rr_client_evpn

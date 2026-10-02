@@ -1,0 +1,65 @@
+---
+# =============================================================================
+# GRUPO: leafs
+# VTEPs: underlay OSPF, iBGP EVPN hacia los spines (RR), NVE con
+# ingress-replication BGP (sin multicast en el underlay).
+# Los servicios (VLAN/VNI/VRF) NO viven aquí: ver 20-tenant-*.nac.yaml
+# =============================================================================
+nxos:
+  device_groups:
+    - name: leafs
+      configuration:
+        feature:
+          evpn: true
+          nv_overlay: true
+          vn_segment_vlan_based: true
+          interface_vlan: true
+          fabric_forwarding: true
+        fabric_forwarding:
+          anycast_gateway_mac: 2020.0000.00aa
+        interfaces:
+          loopbacks:
+            - id: 0
+              description: Router-ID / BGP EVPN peering
+              ip:
+                address: "${loopback0}/32"
+              ospf:
+                process: UNDERLAY
+                area: 0.0.0.0
+            - id: 1
+              description: VTEP source (NVE)
+              ip:
+                address: "${loopback1}/32"
+              ospf:
+                process: UNDERLAY
+                area: 0.0.0.0
+          nve:
+            host_reachability_protocol: bgp
+            source_interface_type: loopback
+            source_interface_id: 1
+        routing:
+          ospf_processes:
+            - name: UNDERLAY
+              router_id: "${loopback0}"
+          bgp:
+            asn: 65001
+            router_id: "${loopback0}"
+            log_neighbor_changes: true
+            address_families:
+              - address_family: l2vpn-evpn
+            neighbors:
+              - ip: 10.0.0.1
+                description: spine1 (RR)
+                remote_as: 65001
+                update_source_interface_type: loopback
+                update_source_interface_id: 0
+                address_families: &evpn_to_rr
+                  - address_family: l2vpn-evpn
+                    send_community_standard: true
+                    send_community_extended: true
+              - ip: 10.0.0.2
+                description: spine2 (RR)
+                remote_as: 65001
+                update_source_interface_type: loopback
+                update_source_interface_id: 0
+                address_families: *evpn_to_rr

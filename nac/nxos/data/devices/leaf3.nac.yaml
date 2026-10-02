@@ -1,0 +1,44 @@
+---
+nxos:
+  devices:
+    - name: leaf3
+      url: https://192.168.100.23
+      device_groups: [leafs]
+      variables:
+        loopback0: 10.0.0.13
+        loopback1: 10.0.1.13
+      configuration:
+        system:
+          hostname: leaf3
+        interfaces:
+          ethernets:
+            - id: "1/1"
+              description: to spine1 Eth1/3
+              mtu: 9216
+              shutdown: false
+              switchport:
+                enabled: false
+              ip:
+                address: 10.1.1.5/31
+              ospf:
+                process: UNDERLAY
+                area: 0.0.0.0
+                network: point-to-point
+            - id: "1/2"
+              description: to spine2 Eth1/3
+              mtu: 9216
+              shutdown: false
+              switchport:
+                enabled: false
+              ip:
+                address: 10.1.2.5/31
+              ospf:
+                process: UNDERLAY
+                area: 0.0.0.0
+                network: point-to-point
+            - id: "1/5"
+              description: host3 (VLAN 20)
+              shutdown: false
+              switchport:
+                mode: access
+                access_vlan: 20

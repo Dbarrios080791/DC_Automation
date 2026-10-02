@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-validate:
+    name: Lint + NaC validation + tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version-file: .python-version
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          pip install -r requirements.txt
+          cd ansible && ansible-galaxy collection install -r requirements.yml -p ./collections
+
+      - name: yamllint
+        run: yamllint .
+
+      - name: ruff
+        run: ruff check . && ruff format --check .
+
+      - name: nac-validate NX-OS (sintaxis + reglas semánticas)
+        run: nac-validate -r nac/nxos/rules nac/nxos/data
+
+      - name: nac-validate ACI
+        run: nac-validate nac/aci/data
+
+      - name: ansible-lint
+        working-directory: ansible
+        run: ansible-lint playbooks/
+
+      - name: pytest
+        run: pytest
+
+  terraform:
+    name: Terraform fmt + validate (${{ matrix.dir }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir: [nac/nxos, nac/aci, cml/terraform]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Leer versión de Terraform
+        id: tfver
+        run: echo "version=$(cat .terraform-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ steps.tfver.outputs.version }}
+          terraform_wrapper: false
+
+      - name: terraform fmt
+        run: terraform fmt -check -recursive
+        working-directory: ${{ matrix.dir }}
+
+      - name: terraform init (sin backend)
+        run: terraform init -backend=false -input=false
+        working-directory: ${{ matrix.dir }}
+
+      - name: terraform validate
+        run: terraform validate
+        working-directory: ${{ matrix.dir }}

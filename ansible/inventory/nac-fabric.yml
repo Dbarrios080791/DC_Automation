@@ -1,0 +1,16 @@
+# Inventario SOLO del fabric de automatización (nac/nxos).
+# Los labs de clase (labs/) no aparecen aquí a propósito: Ansible nunca
+# puede tocarlos por accidente.
+all:
+  children:
+    nac_fabric:
+      children:
+        spines:
+          hosts:
+            spine1: {ansible_host: 192.168.100.11}
+            spine2: {ansible_host: 192.168.100.12}
+        leafs:
+          hosts:
+            leaf1: {ansible_host: 192.168.100.21}
+            leaf2: {ansible_host: 192.168.100.22}
+            leaf3: {ansible_host: 192.168.100.23}

@@ -1,0 +1,16 @@
+---
+# =============================================================================
+# GLOBAL - aplica a TODOS los switches del fabric NaC.
+# Precedencia NaC: global -> device_groups -> device (gana el más específico).
+# =============================================================================
+nxos:
+  global:
+    configuration:
+      feature:
+        nxapi: true
+        lldp: true
+        ospf: true
+        bgp: true
+        bfd: true
+      system:
+        mtu: 9216
